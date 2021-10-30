@@ -1,6 +1,6 @@
 "use strict";
 
-const dataBase = [];
+const dataBase = JSON.parse(localStorage.getItem("awito")) || [];
 
 const modalAdd = document.querySelector(".modal__add");
 const addAd = document.querySelector(".add__ad");
@@ -13,6 +13,8 @@ const modalBtnWarning = document.querySelector(".modal__btn-warning");
 const elementsModalSubmit = [...modalSubmit.elements].filter(
     (item) => item.tagName !== "BUTTON" && item.type !== "submit",
 );
+
+const saveDB = () => localStorage.setItem('awito', JSON.stringify(dataBase));
 
 const checkForm = () => {
     const validForm = elementsModalSubmit.every((item) => item.value);
@@ -55,4 +57,5 @@ modalSubmit.addEventListener("submit", (e) => {
     }
     dataBase.push(itemObj);
     closeModal({target: modalAdd});
+    saveDB();
 });
