@@ -14,11 +14,19 @@ const elementsModalSubmit = [...modalSubmit.elements].filter(
     (item) => item.tagName !== "BUTTON" && item.type !== "submit",
 );
 
-const closeModal = function (e) {
+const checkForm = () => {
+    const validForm = elementsModalSubmit.every((item) => item.value);
+    modalBtnSubmit.disabled = !validForm;
+    modalBtnWarning.style.display = validForm ? "none" : "";
+};
+
+const closeModal = (e) => {
     const target = e.target;
-    if (target.classList.contains("modal__close") || target === this) {
-        this.classList.add("hide");
+    if (target.closest(".modal__close") || target.classList.contains("modal")) {
+        modalAdd.classList.add("hide");
+        modalItem.classList.add("hide");
         modalSubmit.reset();
+        checkForm();
     }
 };
 
@@ -37,18 +45,14 @@ catalog.addEventListener("click", (e) => {
     }
 });
 
-modalSubmit.addEventListener("input", () => {
-    const validForm = elementsModalSubmit.every((item) => item.value);
-    modalBtnSubmit.disabled = !validForm;
-    modalBtnWarning.style.display = validForm ? "none" : "";
-});
+modalSubmit.addEventListener("input", checkForm);
 modalSubmit.addEventListener("submit", (e) => {
     e.preventDefault();
     const itemObj = {};
 
-    for(const item of elementsModalSubmit){
+    for (const item of elementsModalSubmit) {
         itemObj[item.name] = item.value;
     }
     dataBase.push(itemObj);
-    modalSubmit.reset();
+    closeModal({target: modalAdd});
 });
