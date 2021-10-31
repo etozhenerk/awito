@@ -1,6 +1,7 @@
 "use strict";
 
 const dataBase = JSON.parse(localStorage.getItem("awito")) || [];
+const infoPhoto = {};
 
 const modalAdd = document.querySelector(".modal__add");
 const addAd = document.querySelector(".add__ad");
@@ -9,12 +10,15 @@ const modalSubmit = document.querySelector(".modal__submit");
 const modalItem = document.querySelector(".modal__item");
 const catalog = document.querySelector(".catalog");
 const modalBtnWarning = document.querySelector(".modal__btn-warning");
+const modalFileInput = document.querySelector(".modal__file-input");
+const modalFileBtn = document.querySelector(".modal__file-btn");
+const modalImageAdd = document.querySelector(".modal__image-add");
 
 const elementsModalSubmit = [...modalSubmit.elements].filter(
     (item) => item.tagName !== "BUTTON" && item.type !== "submit",
 );
 
-const saveDB = () => localStorage.setItem('awito', JSON.stringify(dataBase));
+const saveDB = () => localStorage.setItem("awito", JSON.stringify(dataBase));
 
 const checkForm = () => {
     const validForm = elementsModalSubmit.every((item) => item.value);
@@ -28,6 +32,8 @@ const closeModal = (e) => {
         modalAdd.classList.add("hide");
         modalItem.classList.add("hide");
         modalSubmit.reset();
+        modalImageAdd.src = "img/temp.jpg";
+        modalFileBtn.textContent = "Добавить фото";
         checkForm();
     }
 };
@@ -55,7 +61,30 @@ modalSubmit.addEventListener("submit", (e) => {
     for (const item of elementsModalSubmit) {
         itemObj[item.name] = item.value;
     }
+    itemObj.image = infoPhoto.base64;
     dataBase.push(itemObj);
-    closeModal({target: modalAdd});
+    closeModal({ target: modalAdd });
     saveDB();
+});
+
+modalFileInput.addEventListener("change", (e) => {
+    const target = e.target;
+
+    const reader = new FileReader();
+    const file = target.files[0];
+
+    infoPhoto.filename = file.name;
+    infoPhoto.size = file.size;
+
+    reader.readAsBinaryString(file);
+
+    reader.addEventListener("load", (event) => {
+        if (infoPhoto.size < 200000) {
+            modalFileBtn.textContent = infoPhoto.filename;
+            infoPhoto.base64 = btoa(event.target.result);
+            modalImageAdd.src = `data:image/jpeg;base64,${infoPhoto.base64}`;
+        } else {
+            modalFileBtn.textContent = "Размер файла не должен превышать 200кб";
+        }
+    });
 });
