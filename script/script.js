@@ -22,6 +22,7 @@ const modalStatusItem = document.querySelector(".modal__status-item");
 const modalDescriptionItem = document.querySelector(".modal__description-item");
 const modalCostItem = document.querySelector(".modal__cost-item");
 const searchInput = document.querySelector(".search__input");
+const menuContainer = document.querySelector(".menu__container");
 
 const elementsModalSubmit = [...modalSubmit.elements].filter(
     (item) => item.tagName !== "BUTTON" && item.type !== "submit",
@@ -139,6 +140,15 @@ modalFileInput.addEventListener("change", (e) => {
             checkForm();
         }
     });
+});
+
+menuContainer.addEventListener("click", e => {
+    const target = e.target;
+
+    if(target.tagName === "A"){
+        const result = dataBase.filter(item => item.category === target.dataset.category);
+        renderCard(result);
+    }
 });
 
 renderCard();
